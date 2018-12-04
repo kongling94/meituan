@@ -1,13 +1,30 @@
 <template>
-  <div>
-    <nuxt/>
-  </div>
+  <el-container class="container">
+    <el-header>
+      header
+    </el-header>
+    <el-main>
+      <nuxt />
+    </el-main>
+    <el-footer>
+      footer
+    </el-footer>
+  </el-container>
+
 </template>
+<script>
+
+export default {
+  components: {
+
+  }
+}
+</script>
 
 <style>
 html {
-  font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI',
-    Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-family: "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
   font-size: 16px;
   word-spacing: 1px;
   -ms-text-size-adjust: 100%;
