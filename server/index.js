@@ -5,8 +5,7 @@ const { Nuxt, Builder } = require('nuxt');
 const session = require('koa-generic-session');
 const Redis = require('koa-redis');
 //数据库相关
-const mongoose = require('mongoose');
-const dbConfig = require('../dbs/config.js');
+const mongoose = require('../dbs/config');
 
 const app = new Koa();
 const host = process.env.HOST || '127.0.0.1';
@@ -32,12 +31,7 @@ async function start() {
       store: new Redis()
     })
   );
-  mongoose.connect(
-    dbConfig.dbs,
-    {
-      useNewUrlParser: true
-    }
-  );
+
   //配置的后台接口
   app.use(cityInterface.routes()).use(cityInterface.allowedMethods());
 

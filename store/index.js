@@ -1,4 +1,6 @@
 import Vuex from 'vuex';
+import VuexLogger from 'vuex/dist/logger';
+const debug = process.env.NODE_ENV !== 'production';
 new Vuex.Store({
   state: () => ({
     counter: 0
@@ -29,5 +31,7 @@ new Vuex.Store({
         }
       }
     }
-  }
+  },
+  plugins: debug ? [VuexLogger()] : [],
+  strict: debug
 });
