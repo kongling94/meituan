@@ -21,6 +21,10 @@
 
       .login {
         float: right;
+        .login_btn {
+          background-color: #2bb8aa;
+          border: 1px solid #fff;
+        }
       }
 
       .bold {
@@ -29,14 +33,33 @@
     }
   }
 
-  >section {
+  > section {
     margin: 0 auto 30px;
-    padding-top: 30px;
-    width: 980px;
+    padding-top: 80px;
+    width: 400px;
     min-height: 300px;
-    padding-right: 550px;
+    padding-right: 50px;
     box-sizing: border-box;
-
+    .title {
+      text-align: center;
+      font-size: 24px;
+      margin-bottom: 15px;
+    }
+    .el-input-group__prepend {
+      width: 55px;
+      text-align: center;
+    }
+    .submit_btn {
+      text-align: center;
+      .el-button {
+        background-color: #2bb8aa;
+        border: 1px solid #fff;
+        &:last-child {
+          background-color: #fff;
+          border: 1px solid #dcdfe6;
+        }
+      }
+    }
     .status {
       font-size: 12px;
       margin-left: 20px;

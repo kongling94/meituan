@@ -23,4 +23,8 @@ export default {
 </script>
 <style lang="scss">
 @import "@/assets/css/public/header/index.scss";
+
+.m-header {
+  box-shadow: 0 2px 27px 0 rgba(0, 0, 0, 0.1);
+}
 </style>
