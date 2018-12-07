@@ -1,7 +1,19 @@
 const mongoose = require('../config');
 console.log(mongoose);
-let userSchema = new mongoose.Schema({
+const userSchema = new mongoose.Schema({
   id: Number,
-  username: String
+  username: {
+    type: String,
+    unique: true,
+    require: true
+  },
+  password: {
+    type: String,
+    require: String
+  },
+  email: {
+    type: String,
+    require: true
+  }
 });
 export default mongoose.model('User', userSchema);

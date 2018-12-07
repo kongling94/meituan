@@ -18,7 +18,8 @@
       <h4 class="title">账号注册</h4>
       <el-form ref="form"
                :model="form"
-               :rules="rules">
+               :rules="rules"
+               status-icon>
         <!--  <el-form-item prop="phone">
           <el-input v-model="form.phone">
             <template slot="prepend">
@@ -47,13 +48,14 @@
             <template slot="prepend">
               邮箱
             </template>
+            <template slot="append">
+              <el-button size="mini"
+                         type="primary"
+                         @click="sendMsg">发送验证码</el-button>
+            </template>
           </el-input>
-          <el-button size="mini"
-                     round
-                     @click="sendMsg">发送验证码</el-button>
           <span class="status">{{statusMsg}}</span>
         </el-form-item>
-
         <el-form-item prop="code">
           <el-input v-model="form.code"
                     maxlength="4">
@@ -65,7 +67,8 @@
 
         <el-form-item prop="password">
           <el-input v-model="form.password"
-                    type="password">
+                    type="password"
+                    minlength="6">
             <template slot="prepend">
               密码
             </template>
@@ -74,7 +77,8 @@
         <el-form-item>
           <el-input v-model="form.password2"
                     prop="password2"
-                    type="password">
+                    type="password"
+                    minlength="6">
             <template slot="prepend">
               确认密码
             </template>
@@ -141,6 +145,18 @@ export default {
             type: 'string',
             message: '请输入密码',
             trigger: 'blur'
+          },
+          {
+            validator: (rule, value, callback) => {
+              if (value === '') {
+                callback(new Error('密码不能为空'))
+              } else {
+                if (value.length < 6) {
+                  callback(new Error('密码不能少于6位'))
+                }
+              }
+              callback()
+            }
           }
         ],
         password2: [
@@ -153,10 +169,10 @@ export default {
           {
             validator: (rule, value, callback) => {
               if (value === '') {
-                callback(new Erroe('密码不能为空'))
+                callback(new Error('密码不能为空'))
               } else {
                 if (value !== this.form.password) {
-                  callback(new Erroe('两次密码不一样'))
+                  callback(new Error('两次密码不一样'))
                 }
               }
               callback()
@@ -172,6 +188,43 @@ export default {
       console.log('submit!');
     },
     sendMsg () {
+      const _self = this;
+      let namePass, emailPass;
+      if (_self.timerid) {
+        return false
+      }
+      this.$refs['form'].validateField('name', (value) => {
+        namePass = value
+      })
+      _self.statusMsg = ''
+      if (namePass) {
+        return false
+      }
+      this.$refs['form'].validateField('email', (value) => {
+        emailPass = value
+      })
+      if (!namePass && !emailPass) {
+        _self.$axios.post('/user/verify', {
+          username: encodeURI(_self.form.name),
+          email: encodeURI(_self.form.email),
+          password: encodeURI(_self.form.password)
+        }).then(({ status, data }) => {
+          if (status === 200 && data && data.code === 0) {
+            let count = 60;
+            _self.statusMsg = `验证码已发送，剩余${count--}秒`
+            _self.timerid = setInterval(() => {
+              _self.statusMsg = `验证码已发送，剩余${count--}秒`
+              if (count === 0) {
+                clearInterval(_self.timerid)
+              }
+            }, 1000);
+          } else {
+            _self.statusMsg = data.msg
+          }
+        })
+      }
+    },
+    register () {
 
     }
   }
