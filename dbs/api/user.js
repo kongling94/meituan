@@ -17,16 +17,12 @@ let Store = new Redis().client;
 
 // 注册的接口
 router.post('/signup', async ctx => {
-  const { username, passport, email, code } = ctx.request.body;
-  // 注册前 验证码的校验
+  const { username, password, email, code } = ctx.request.body;
+
   if (code) {
-    // 获取 redis中的code值
-    const sveCode = await Store.hget(`nodemail:${username}`, 'code');
-    // 获取 redis中的过期时间
+    const saveCode = await Store.hget(`nodemail:${username}`, 'code');
     const saveExpire = await Store.hget(`nodemail:${username}`, 'expire');
-    // code值的校验
     if (code === saveCode) {
-      // code为真下 过期时间的检验
       if (new Date().getTime() - saveExpire > 0) {
         ctx.body = {
           code: -1,
@@ -37,39 +33,27 @@ router.post('/signup', async ctx => {
     } else {
       ctx.body = {
         code: -1,
-        msg: '验证码错误'
+        msg: '请填写正确的验证码'
       };
     }
   } else {
     ctx.body = {
       code: -1,
-      msg: '请输入验证码'
+      msg: '请填写验证码'
     };
   }
-  // 用户名的校验
-  let user = await User.findOne({
-    username
-  });
-  // 数据库中查询到已经存在
+  let user = await User.find({ username });
   if (user.length) {
     ctx.body = {
       code: -1,
-      msg: '用户名已存在'
+      msg: '已被注册'
     };
-    return;
+    return false;
   }
-  // 写入数据库
-  let n_user = await User.create({
-    username,
-    password,
-    email
-  });
-  // 写入是否成功
-  if (n_user) {
-    let res = await axios.post('/users/signin', {
-      username,
-      password
-    });
+  let nuser = await User.create({ username, password, email });
+  if (nuser) {
+    //这里能创建用户到数据库中，跳转登录 就失败 查询到登录接口下调用了passportJS的接口中有 密码错误的返回，应该是passport中代码有写错
+    let res = await axios.post('/users/signin', { username, password }); // false
     if (res.data && res.data.code === 0) {
       ctx.body = {
         code: 0,
@@ -79,7 +63,7 @@ router.post('/signup', async ctx => {
     } else {
       ctx.body = {
         code: -1,
-        msg: '注册失败'
+        msg: '出错了'
       };
     }
   } else {
@@ -96,13 +80,13 @@ router.post('/signin', async (ctx, next) => {
     if (err) {
       ctx.body = {
         code: -1,
-        msg: err
+        msg: '登录不上？'
       };
     } else {
       if (user) {
         ctx.body = {
           code: 0,
-          msg: '登陆成功',
+          msg: '登录成功',
           user
         };
         return ctx.login(user);
@@ -131,6 +115,7 @@ router.post('/verify', async function(ctx, next) {
   // Email地址的相关配置
   let sendCode = nodeMailer.createTransport({
     host: Email.smtp.host,
+    // server: 'qq',
     port: 587,
     secure: false,
     auth: {
@@ -145,20 +130,23 @@ router.post('/verify', async function(ctx, next) {
     email: ctx.request.body.email,
     user: ctx.request.body.username
   };
+
   // 邮件内容的设置
   let mailOptions = {
-    form: `"认证邮件"<${Email.smtp.user}>`,
-    to: ko.eamil,
+    from: `"认证邮件"<${Email.smtp.user}>`,
+    to: ko.email,
     subject: '丑团网注册验证信息',
+    text: '注册验证码',
     html: `注册验证码是${ko.code}`
   };
   // 发送验证码到邮箱
   await sendCode.sendMail(mailOptions, (err, info) => {
     if (err) {
-      return console.log('error');
+      return console.log(err);
     } else {
+      // Preview only available when sending through an Ethereal account
       Store.hmset(
-        `nodemail:${k.user}`,
+        `nodemail:${ko.user}`,
         'code',
         ko.code,
         'expire',

@@ -87,7 +87,7 @@
 
         <el-form-item class="submit_btn">
           <el-button type="primary"
-                     @click="onSubmit">立即创建</el-button>
+                     @click="register">立即创建</el-button>
           <el-button>取消</el-button>
           <div class="error">{{error}}</div>
         </el-form-item>
@@ -96,6 +96,7 @@
   </div>
 </template>
 <script>
+import Crypto from 'crypto-js';
 export default {
   layout: 'blank',
   data () {
@@ -124,17 +125,12 @@ export default {
             type: 'email',
             message: '请输入邮箱地址',
             trigger: 'blur'
-          },
-          {
-            type: 'email',
-            message: '请输入正确的邮箱地址',
-            trigger: ['blur', 'change']
           }
         ],
         code: [
           {
             required: true,
-            type: 'number',
+            type: 'string',
             message: '请输入验证码',
             trigger: 'blur'
           }
@@ -204,7 +200,7 @@ export default {
         emailPass = value
       })
       if (!namePass && !emailPass) {
-        _self.$axios.post('/user/verify', {
+        _self.$axios.post('/users/verify', {
           username: encodeURI(_self.form.name),
           email: encodeURI(_self.form.email),
           password: encodeURI(_self.form.password)
@@ -216,6 +212,7 @@ export default {
               _self.statusMsg = `验证码已发送，剩余${count--}秒`
               if (count === 0) {
                 clearInterval(_self.timerid)
+                _self.statusMsg = ''
               }
             }, 1000);
           } else {
@@ -224,8 +221,32 @@ export default {
         })
       }
     },
+    // 注册请求
     register () {
-
+      let _self = this
+      this.$refs['form'].validate((val) => {
+        if (val) {
+          _self.$axios.post('/users/signup', {
+            username: window.encodeURIComponent(_self.form.name),
+            password: Crypto.MD5(_self.form.password).toString(),
+            email: _self.form.email,
+            code: _self.form.code
+          }).then(({ status, data }) => {
+            if (status === 200) {
+              if (data && data.code === 0) {
+                location.href = '/login'
+              } else {
+                _self.error = data.msg
+              }
+            } else {
+              _self.error = '服务器出错了'
+            }
+            setTimeout(() => {
+              _self.error = ''
+            }, 1500);
+          })
+        }
+      })
     }
   }
 }

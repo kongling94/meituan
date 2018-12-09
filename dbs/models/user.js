@@ -1,7 +1,5 @@
-const mongoose = require('../config');
-console.log(mongoose);
+const mongoose = require('mongoose');
 const userSchema = new mongoose.Schema({
-  id: Number,
   username: {
     type: String,
     unique: true,

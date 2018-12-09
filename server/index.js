@@ -5,12 +5,18 @@ const { Nuxt, Builder } = require('nuxt');
 const session = require('koa-generic-session');
 const Redis = require('koa-redis');
 const json = require('koa-json');
-//数据库相关
-const mongoose = require('../dbs/config');
-
 const app = new Koa();
 const host = process.env.HOST || '127.0.0.1';
 const port = process.env.PORT || 3000;
+//数据库相关
+const mongoose = require('mongoose');
+mongoose.connect(
+  'mongodb://127.0.0.1:27017/choutuan',
+  {
+    useNewUrlParser: true
+  }
+);
+
 // 接口
 import User from '../dbs/api/user';
 import passport from '../dbs/utils/passport';
@@ -32,7 +38,7 @@ async function start() {
 
   // redis相关的设置
   app.keys = ['mt', 'keys'];
-  app.proxy = true;
+
   app.use(
     session({
       key: 'mt',
