@@ -5,8 +5,9 @@ const { Nuxt, Builder } = require('nuxt');
 const session = require('koa-generic-session');
 const Redis = require('koa-redis');
 const json = require('koa-json');
+import mongoose from 'mongoose';
 //数据库相关
-const mongoose = require('../dbs/config');
+import dbConfig from '../dbs/config';
 
 const app = new Koa();
 const host = process.env.HOST || '127.0.0.1';
@@ -47,6 +48,13 @@ async function start() {
     })
   );
   app.use(json());
+
+  mongoose.connect(
+    'mongodb://127.0.0.1:27017/choutuan',
+    {
+      useNewUrlParser: true
+    }
+  );
   //配置的后台接口
   app.use(User.routes()).use(User.allowedMethods());
   // redis本地策略的格式化

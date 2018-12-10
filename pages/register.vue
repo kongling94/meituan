@@ -87,7 +87,7 @@
 
         <el-form-item class="submit_btn">
           <el-button type="primary"
-                     @click="onSubmit">立即创建</el-button>
+                     @click="register">立即创建</el-button>
           <el-button>取消</el-button>
           <div class="error">{{error}}</div>
         </el-form-item>
@@ -96,6 +96,7 @@
   </div>
 </template>
 <script>
+import Crypto from 'crypto-js'
 export default {
   layout: 'blank',
   data () {
@@ -134,7 +135,7 @@ export default {
         code: [
           {
             required: true,
-            type: 'number',
+            type: 'string',
             message: '请输入验证码',
             trigger: 'blur'
           }
@@ -184,9 +185,6 @@ export default {
     }
   },
   methods: {
-    onSubmit () {
-      console.log('submit!');
-    },
     sendMsg () {
       const _self = this;
       let namePass, emailPass;
@@ -204,7 +202,7 @@ export default {
         emailPass = value
       })
       if (!namePass && !emailPass) {
-        _self.$axios.post('/user/verify', {
+        _self.$axios.post('/users/verify', {
           username: encodeURI(_self.form.name),
           email: encodeURI(_self.form.email),
           password: encodeURI(_self.form.password)
@@ -225,6 +223,30 @@ export default {
       }
     },
     register () {
+      let _self = this
+      this.$refs['form'].validate((val) => {
+        if (val) {
+          _self.$axios.post('/users/signup', {
+            username: window.encodeURIComponent(_self.form.name),
+            password: Crypto.MD5(_self.form.password).toString(),
+            email: _self.form.email,
+            code: _self.form.code,
+          }).then(({ status, data }) => {
+            if (status === 200) {
+              if (data && data.code === 0) {
+                _self.$router.push({ path: '/' })
+              } else {
+                _self.error = '提交失败'
+              }
+            } else {
+              _self.error = `服务器出错，错误码${status}`
+            }
+            setTimeout(() => {
+              _self.error = ''
+            }, 1500);
+          })
+        }
+      })
 
     }
   }

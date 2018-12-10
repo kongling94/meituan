@@ -1,7 +1,5 @@
-const mongoose = require('../config');
-console.log(mongoose);
+import mongoose from 'mongoose';
 const userSchema = new mongoose.Schema({
-  id: Number,
   username: {
     type: String,
     unique: true,

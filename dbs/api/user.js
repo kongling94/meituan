@@ -17,11 +17,11 @@ let Store = new Redis().client;
 
 // 注册的接口
 router.post('/signup', async ctx => {
-  const { username, passport, email, code } = ctx.request.body;
+  const { username, password, email, code } = ctx.request.body;
   // 注册前 验证码的校验
   if (code) {
     // 获取 redis中的code值
-    const sveCode = await Store.hget(`nodemail:${username}`, 'code');
+    const saveCode = await Store.hget(`nodemail:${username}`, 'code');
     // 获取 redis中的过期时间
     const saveExpire = await Store.hget(`nodemail:${username}`, 'expire');
     // code值的校验
@@ -129,7 +129,7 @@ router.post('/verify', async function(ctx, next) {
     return false;
   }
   // Email地址的相关配置
-  let sendCode = nodeMailer.createTransport({
+  let smtpConfig = nodeMailer.createTransport({
     host: Email.smtp.host,
     port: 587,
     secure: false,
@@ -145,20 +145,21 @@ router.post('/verify', async function(ctx, next) {
     email: ctx.request.body.email,
     user: ctx.request.body.username
   };
+
   // 邮件内容的设置
   let mailOptions = {
-    form: `"认证邮件"<${Email.smtp.user}>`,
-    to: ko.eamil,
+    from: `"认证邮件"<${Email.smtp.user}>`,
+    to: ko.email,
     subject: '丑团网注册验证信息',
     html: `注册验证码是${ko.code}`
   };
   // 发送验证码到邮箱
-  await sendCode.sendMail(mailOptions, (err, info) => {
+  await smtpConfig.sendMail(mailOptions, (err, info) => {
     if (err) {
       return console.log('error');
     } else {
       Store.hmset(
-        `nodemail:${k.user}`,
+        `nodemail:${ko.user}`,
         'code',
         ko.code,
         'expire',
