@@ -13,7 +13,7 @@ passsport.use(
 
     if (result != null) {
       // 返回匹配的信息
-      if (result.passsport === password) {
+      if (result.password === password) {
         return done(null, result);
       } else {
         return done(null, false, '密码不对');

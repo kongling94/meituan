@@ -13,7 +13,7 @@ const redis = {
       return 'k.cohen@foxmail.com';
     },
     get pass() {
-      return 'jllglyspazjxbige';
+      return 'ejrktbpdcogqcbbe';
     },
     get code() {
       return () => {

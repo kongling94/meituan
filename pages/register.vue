@@ -96,7 +96,7 @@
   </div>
 </template>
 <script>
-import Crypto from 'crypto-js'
+import Crypto from 'crypto-js';
 export default {
   layout: 'blank',
   data () {
@@ -125,11 +125,6 @@ export default {
             type: 'email',
             message: '请输入邮箱地址',
             trigger: 'blur'
-          },
-          {
-            type: 'email',
-            message: '请输入正确的邮箱地址',
-            trigger: ['blur', 'change']
           }
         ],
         code: [
@@ -185,6 +180,7 @@ export default {
     }
   },
   methods: {
+
     sendMsg () {
       const _self = this;
       let namePass, emailPass;
@@ -214,6 +210,7 @@ export default {
               _self.statusMsg = `验证码已发送，剩余${count--}秒`
               if (count === 0) {
                 clearInterval(_self.timerid)
+                _self.statusMsg = ''
               }
             }, 1000);
           } else {
@@ -222,6 +219,7 @@ export default {
         })
       }
     },
+    // 注册请求
     register () {
       let _self = this
       this.$refs['form'].validate((val) => {
@@ -230,16 +228,16 @@ export default {
             username: window.encodeURIComponent(_self.form.name),
             password: Crypto.MD5(_self.form.password).toString(),
             email: _self.form.email,
-            code: _self.form.code,
+            code: _self.form.code
           }).then(({ status, data }) => {
             if (status === 200) {
               if (data && data.code === 0) {
-                _self.$router.push({ path: '/' })
+                location.href = '/login'
               } else {
-                _self.error = '提交失败'
+                _self.error = data.msg
               }
             } else {
-              _self.error = `服务器出错，错误码${status}`
+              _self.error = '服务器出错了'
             }
             setTimeout(() => {
               _self.error = ''
@@ -247,7 +245,6 @@ export default {
           })
         }
       })
-
     }
   }
 }

@@ -5,17 +5,23 @@ const { Nuxt, Builder } = require('nuxt');
 const session = require('koa-generic-session');
 const Redis = require('koa-redis');
 const json = require('koa-json');
-import mongoose from 'mongoose';
-//数据库相关
-import dbConfig from '../dbs/config';
-
 const app = new Koa();
 const host = process.env.HOST || '127.0.0.1';
 const port = process.env.PORT || 3000;
+const mongoose = require('mongoose');
 // 接口
 import User from '../dbs/api/user';
 import passport from '../dbs/utils/passport';
 import bodyparser from 'koa-bodyparser';
+
+//数据库相关
+
+mongoose.connect(
+  'mongodb://127.0.0.1:27017/dbs',
+  {
+    useNewUrlParser: true
+  }
+);
 
 // Import and Set Nuxt.js options
 let config = require('../nuxt.config.js');
@@ -33,7 +39,7 @@ async function start() {
 
   // redis相关的设置
   app.keys = ['mt', 'keys'];
-  app.proxy = true;
+
   app.use(
     session({
       key: 'mt',
@@ -48,18 +54,11 @@ async function start() {
     })
   );
   app.use(json());
-
-  mongoose.connect(
-    'mongodb://127.0.0.1:27017/choutuan',
-    {
-      useNewUrlParser: true
-    }
-  );
-  //配置的后台接口
-  app.use(User.routes()).use(User.allowedMethods());
   // redis本地策略的格式化
   app.use(passport.initialize());
   app.use(passport.session());
+  //配置的后台接口
+  app.use(User.routes()).use(User.allowedMethods());
 
   app.use(ctx => {
     ctx.status = 200; // koa defaults to 404 when it sees that status is unset
