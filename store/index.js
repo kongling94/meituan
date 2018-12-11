@@ -1,37 +1,34 @@
 import Vuex from 'vuex';
 import VuexLogger from 'vuex/dist/logger';
+import geo from './modules/geo';
+
 const debug = process.env.NODE_ENV !== 'production';
-new Vuex.Store({
-  state: () => ({
-    counter: 0
-  }),
-  mutations: {
-    increment(state) {
-      state.counter++;
-    }
-  },
-  modules: {
-    namespaced: true,
-    todos: {
-      state: () => ({
-        list: []
-      }),
-      mutations: {
-        add(state, { text }) {
-          state.list.push({
-            text,
-            done: false
-          });
-        },
-        remove(state, { todo }) {
-          state.list.splice(state.list.indexOf(todo), 1);
-        },
-        toggle(state, { todo }) {
-          todo.done = !todo.done;
-        }
+
+const store = () => {
+  return new Vuex.Store({
+    // 本地化state
+
+    // 本地化 mutations
+    mutations: {},
+    // 模块化
+    modules: {
+      geo
+    },
+    actions: {
+      async nuxtServerInit({ commit }, { req, app }) {
+        const {
+          status,
+          data: { province, city }
+        } = await app.$axios.get('/geo/getPosition');
+        commit(
+          'geo/setPosition',
+          status === 200 ? { city, province } : { city: '', province: '' }
+        );
       }
-    }
-  },
-  plugins: debug ? [VuexLogger()] : [],
-  strict: debug
-});
+    },
+    plugins: debug ? [VuexLogger()] : [],
+    strict: debug
+  });
+};
+
+export default store;

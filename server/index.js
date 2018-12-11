@@ -11,6 +11,7 @@ const port = process.env.PORT || 3000;
 const mongoose = require('mongoose');
 // 接口
 import User from '../dbs/api/user';
+import Geo from '../dbs/api/geo';
 import passport from '../dbs/utils/passport';
 import bodyparser from 'koa-bodyparser';
 
@@ -59,6 +60,7 @@ async function start() {
   app.use(passport.session());
   //配置的后台接口
   app.use(User.routes()).use(User.allowedMethods());
+  app.use(Geo.routes()).use(Geo.allowedMethods());
 
   app.use(ctx => {
     ctx.status = 200; // koa defaults to 404 when it sees that status is unset
