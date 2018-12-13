@@ -1,13 +1,19 @@
-export const state = () => ({
+const state = () => ({
   position: {}
 });
-export const mutations = {
+const mutations = {
   setPosition(state, val) {
     state.position = val;
   }
 };
-export const actions = {
+const actions = {
   setPosition: ({ commit }, data) => {
     commit('setPosition', data);
   }
+};
+export default {
+  namespaced: true,
+  state,
+  mutations,
+  actions
 };

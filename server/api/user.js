@@ -1,12 +1,12 @@
 import Router from 'koa-router';
 import Redis from 'koa-redis';
 import nodeMailer from 'nodemailer';
-import axios from '../utils/axios';
-import passport from '../utils/passport';
-import Email from '../redisConfig';
+import axios from '../../dbs/utils/axios';
+import passport from '../../dbs/utils/passport';
+import Email from '../../dbs/redisConfig';
 
 // 引入数据库模型
-import User from '../models/user';
+import User from '../../dbs/models/user';
 
 // 定义路由就口前缀
 let router = new Router({
