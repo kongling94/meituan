@@ -7,6 +7,7 @@
   </div>
 </template>
 <script>
+import { mapMutations } from 'vuex'
 export default {
   data () {
     return {
@@ -18,9 +19,15 @@ export default {
     this.$axios.get('/geo/getPosition').then(res => {
       let { city, region } = res.data
       this.city = city
-      this.region = resgion
+      this.region = region
+      this.setPosition({ city, region })
     })
   },
+  methods: {
+    ...mapMutations({
+      setPosition: 'geo/setPosition'
+    })
+  }
 }
 </script>
 <style lang="scss" scoped>

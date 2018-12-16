@@ -1,10 +1,8 @@
 import Router from 'koa-router';
-
-import axios from '../utils/axios';
-import City from '../models/city';
-import Province from '../models/province';
-import Menu from '../models/menu';
-
+import axios from '../../dbs/utils/axios';
+import Province from '../../dbs/models/province';
+import Menu from '../../dbs/models/menu';
+import City from '../../dbs/models/city';
 // 定义路由就口前缀
 let router = new Router({
   prefix: '/geo'
@@ -22,12 +20,12 @@ router.get('/getPosition', async ctx => {
   }
   if (ip) {
     let {
-      code,
+      status,
       data: {
         data: { city, region }
       }
     } = await axios.get(`http://ip.taobao.com/service/getIpInfo.php?ip=${ip}`);
-    if (code === 0) {
+    if (status === 200) {
       ctx.body = {
         city,
         region
@@ -36,22 +34,19 @@ router.get('/getPosition', async ctx => {
   } else {
     ctx.body = {};
   }
-  /*  if (status === 200) {
-    ctx.body = {
-      province,
-      city
-    };
-  } else {
-    ctx.body = {
-      province: '',
-      city: ''
-    };
-  } */
 });
-router.get('/province', async ctx => {
-  let province = await Province.find();
+
+router.get('/menu', async ctx => {
+  let result = await Menu.findOne();
   ctx.body = {
-    province: province.map(item => {
+    menu: result.menu
+  };
+});
+
+router.get('/province', async ctx => {
+  let result = await Province.find();
+  ctx.body = {
+    province: result.map(item => {
       return {
         id: item.id,
         name: item.value[0]
@@ -59,25 +54,16 @@ router.get('/province', async ctx => {
     })
   };
 });
-router.get('/province:id', async ctx => {
+
+router.get('/province/:id', async ctx => {
   let city = await City.findOne({
     id: ctx.params.id
   });
   ctx.body = {
     code: 0,
     city: city.value.map(item => {
-      return {
-        province: item.province,
-        id: item.id,
-        name: item.name
-      };
+      return { province: item.province, id: item.id, name: item.name };
     })
-  };
-});
-router.get('/menu', async ctx => {
-  const result = await Menu.findOne();
-  ctx.body = {
-    menu: result.menu
   };
 });
 router.get('/city', async ctx => {
