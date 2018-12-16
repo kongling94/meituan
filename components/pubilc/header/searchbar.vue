@@ -18,7 +18,7 @@
           <dl class="searchList"
               v-if="isSearchList">
             <dd v-for="item in searchList"
-                :key="item.id">{{item}}</dd>
+                :key="item.id">{{item.name}}</dd>
 
           </dl>
           <dl class="hotPlace"
@@ -82,6 +82,7 @@
   </div>
 </template>
 <script>
+import _ from 'lodash'
 export default {
   data () {
     return {
@@ -108,9 +109,18 @@ export default {
         this.isFocus = false
       }, 300);
     },
-    ipt () {
-
-    }
+    ipt: _.debounce(async function () {
+      let _self = this
+      let city = _self.$store.state.geo.position.city.replace('市', '')
+      _self.searchList = []
+      let { status, data: { top } } = await _self.$axios.get('/search/top', {
+        params: {
+          input: _self.search,
+          city
+        }
+      })
+      _self.searchList = top.slice(0, 10)
+    }, 300)
   }
 }
 </script>
