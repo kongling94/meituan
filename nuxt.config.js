@@ -47,7 +47,10 @@ module.exports = {
    */
   axios: {
     // See https://github.com/nuxt-community/axios-module#options
-    proxy:true
+    proxy: true
+  },
+  proxy: {
+    // '/m_search': 'https://www.meituan.com/ptapi/suggest'
   },
 
   /*

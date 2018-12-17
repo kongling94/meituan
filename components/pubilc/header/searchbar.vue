@@ -18,7 +18,7 @@
           <dl class="searchList"
               v-if="isSearchList">
             <dd v-for="item in searchList"
-                :key="item.id">{{item.name}}</dd>
+                :key="item.id">{{item.editorWord}}</dd>
 
           </dl>
           <dl class="hotPlace"
@@ -119,6 +119,7 @@ export default {
           city
         }
       })
+
       _self.searchList = top.slice(0, 10)
     }, 300)
   }

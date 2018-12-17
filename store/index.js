@@ -15,9 +15,9 @@ const store = () =>
       async nuxtServerInit({ commit }, { req, app }) {
         let pos = await app.$axios.get('geo/getPosition');
         let home = await app.$axios.get('geo/menu');
-        console.log(pos, home);
       }
-    }
+    },
+    plugins: [createLogger()]
   });
 
 export default store;
