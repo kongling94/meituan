@@ -13,8 +13,8 @@
 
 </template>
 <script>
-import Myheader from '@/components/pubilc/header/index.vue'
-import Myfooter from '@/components/pubilc/footer/index.vue'
+import Myheader from '@/components/public/header/index.vue'
+import Myfooter from '@/components/public/footer/index.vue'
 export default {
   components: {
     Myheader, Myfooter

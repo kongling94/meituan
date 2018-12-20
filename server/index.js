@@ -13,6 +13,7 @@ const mongoose = require('mongoose');
 import User from './api/user';
 import Geo from './api/geo';
 import Search from './api/search';
+import Categroy from './api/categroy';
 import passport from '../dbs/utils/passport';
 import bodyparser from 'koa-bodyparser';
 
@@ -63,6 +64,7 @@ async function start() {
   app.use(User.routes()).use(User.allowedMethods());
   app.use(Geo.routes()).use(Geo.allowedMethods());
   app.use(Search.routes()).use(Search.allowedMethods());
+  app.use(Categroy.routes()).use(Categroy.allowedMethods());
 
   app.use(ctx => {
     ctx.status = 200; // koa defaults to 404 when it sees that status is unset
