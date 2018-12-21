@@ -19,7 +19,7 @@ export default {
     if (!this.$store.state.geo.position.city) {
       this.$axios.get('/geo/getPosition').then(res => {
         let { city, region } = res.data
-        this.city = city
+        this.city = city = city.replace('市', '')
         this.region = region
         this.setPosition({ city, region })
       })

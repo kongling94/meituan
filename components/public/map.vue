@@ -39,7 +39,7 @@ export default {
       _self.map = map
       window.AMap.plugin('AMap.ToolBar', () => {
         let toolbar = new window.AMap.Toolbar()
-        map.addControl(toolbar)
+        map.addControl(toolbar);
         let marker = new window.AMap.Marker({
           icon: 'https://webapi.amap.com/theme/v1.3/markers/n/mark_b.png',
           position: _self.point
