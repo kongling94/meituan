@@ -1,4 +1,5 @@
 import Router from 'koa-router';
+import Redis from 'koa-redis';
 import axios from '../../dbs/utils/axios';
 import Province from '../../dbs/models/province';
 import Menu from '../../dbs/models/menu';
@@ -8,6 +9,7 @@ import sign from './sign';
 let router = new Router({
   prefix: '/geo'
 });
+let Store = new Redis().client;
 
 /* const sign = 'abcd',
   old_URL = 'http://cp-tools.cn/geo/getPosition?sign=${sign}'; */
@@ -17,11 +19,15 @@ router.get('/getPosition', async ctx => {
     data: { province, city }
   } = await axios.get(`http://cp-tools.cn/geo/getPosition?sign=${sign}`);
   if (status === 200) {
+    const ccity = await Store.hset('pos', 'city', city);
+    ctx.cookies.set('cur_city', new Buffer(city).toString('base64'));
     ctx.body = {
       province,
       city
     };
+    // 因为nuxtServerInit无法执行 使用cookies保存city 其他接口要使用city
   } else {
+    // ctx.cookies.set('cur_city', '');
     ctx.body = {
       province: '',
       city: ''

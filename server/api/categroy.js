@@ -1,6 +1,6 @@
 import Router from 'koa-router';
 import axios from '../..//dbs/utils/axios';
-
+import Redis from 'koa-redis';
 import sign from './sign';
 
 let router = new Router({ prefix: '/categroy' });
@@ -18,7 +18,10 @@ router.get('/crumbs', async ctx => {
   //     types: []
   //   }
   // }
-  const { city } = ctx.query;
+
+  //这里使用cookies是因为 store在asyncData中无法获得值
+  const city = new Buffer(ctx.cookies.get('cur_city'), 'base64').toString();
+
   let {
     status,
     data: { areas, types }

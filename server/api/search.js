@@ -102,12 +102,15 @@ router.get('/resultsByKeywords', async ctx => {
 });
 
 router.get('/products', async ctx => {
+  // 请求参数的解构赋值
   let keyword = ctx.query.keyword || '旅游';
   let city = ctx.query.city || '北京';
+  // 请求接口的解构赋值
   let {
     status,
     data: { product, more }
   } = await axios.get('http://cp-tools.cn/search/products', {
+    // 携带参数
     params: {
       keyword,
       city,
@@ -117,6 +120,7 @@ router.get('/products', async ctx => {
   if (status === 200) {
     ctx.body = {
       product,
+      // 判断是否登录
       more: ctx.isAuthenticated() ? more : [],
       login: ctx.isAuthenticated()
     };
@@ -128,5 +132,4 @@ router.get('/products', async ctx => {
     };
   }
 });
-router.get('/products', async ctx => {});
 export default router;
