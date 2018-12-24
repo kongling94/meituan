@@ -1,5 +1,5 @@
 import Router from 'koa-router';
-import axios from '../..//dbs/utils/axios';
+import axios from '../../dbs/utils/axios';
 import Redis from 'koa-redis';
 import sign from './sign';
 
