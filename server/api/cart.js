@@ -44,8 +44,6 @@ router.post('/create', async ctx => {
 
 router.post('/getCart', async ctx => {
   let { id } = ctx.request.body;
-  console.log(id);
-
   try {
     let result = await Cart.findOne({ cartNo: id });
     ctx.body = {
